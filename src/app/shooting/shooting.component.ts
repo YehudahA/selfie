@@ -25,7 +25,7 @@ export class ShootingComponent implements AfterViewInit {
       .then(stream => {
         video.srcObject = stream;
 
-        const secondsCounter = 2;
+        const secondsCounter = 5;
 
         timer(0, 1000).pipe(
           take(secondsCounter)

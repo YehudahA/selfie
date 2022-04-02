@@ -7,11 +7,11 @@ export class DataService{
     getConfig() : Observable<Config>{
         return of({
             frames: [
-                '../assets/frames/wood.jpg',
-                '../assets/frames/green.jpg',
-                '../assets/frames/gold2.png',
-                '../assets/frames/gold.jpg',
-                '../assets/frames/blue.jpg'
+                './assets/frames/wood.jpg',
+                './assets/frames/green.jpg',
+                './assets/frames/gold2.png',
+                './assets/frames/gold.jpg',
+                './assets/frames/blue.jpg'
             ]
         });
     }
