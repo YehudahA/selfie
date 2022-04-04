@@ -1,41 +1,60 @@
-import { AfterViewChecked, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterContentChecked, AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Frame } from '../models/config';
 
 @Component({
   selector: 'app-image-designer',
   templateUrl: './image-designer.component.html',
   styleUrls: ['./image-designer.component.css']
 })
-export class ImageDesignerComponent implements AfterViewChecked {
+export class ImageDesignerComponent implements AfterViewInit, AfterContentChecked {
 
   @ViewChild('canvas') canvas: ElementRef<HTMLCanvasElement> = null!;
 
-  @Input() frame!: HTMLImageElement;
+  @Input() frame!: Frame;
   @Input() picture!: HTMLImageElement;
 
-  ngAfterViewChecked() {
-    const outputWidth = 500;
-    const outputHeight = 400;
-    const frameWidth = 60;
+  private viewInit = false;
 
+  ngAfterViewInit() {
+    this.viewInit = true;
+    this.renderCanvas();
+  }
+
+  ngAfterContentChecked() {
+    if (this.viewInit) {
+      this.renderCanvas();
+    }
+  }
+
+  renderCanvas() {
+    const image = new Image();
     const canvas = this.canvas.nativeElement;
-
-    canvas.width = outputWidth;
-    canvas.height = outputHeight;
-
     const canvasContext: CanvasRenderingContext2D = canvas.getContext('2d')!;
 
-    canvasContext.drawImage(this.frame,
-      0,
-      0,
-      outputWidth,
-      outputHeight);
+    image.crossOrigin = "anonymous";
 
-    canvasContext.drawImage(this.picture,
-      frameWidth,
-      frameWidth,
-      outputWidth - frameWidth * 2,
-      outputHeight - frameWidth * 2);
+    image.onload = () => {
+      const outputWidth = image.width;
+      const outputHeight = image.height;
+      const frameWidth = this.frame.width;
 
+      canvas.width = outputWidth;
+      canvas.height = outputHeight;
+
+      canvasContext.drawImage(image,
+        0,
+        0,
+        outputWidth,
+        outputHeight);
+
+      canvasContext.drawImage(this.picture,
+        frameWidth,
+        frameWidth,
+        outputWidth - frameWidth * 2,
+        outputHeight - frameWidth * 2);
+    }
+
+    image.src = this.frame.fullPath;
   };
 
   getPicture() {

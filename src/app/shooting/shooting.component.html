@@ -1,6 +1,6 @@
-<img src="{{frame}}" />
+<img src="{{frame.fullPath}}" #img />
 
-<div class="video-wrapper">
+<div class="video-wrapper" [style]="{margin: frameWidth}">
     <video muted autoplay #video></video>
 </div>
 

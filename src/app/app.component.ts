@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ImageDesignerComponent } from './image-designer/image-designer.component';
-import { Config } from './models/config';
+import { Config, Frame } from './models/config';
 import { DataService } from './models/data.service';
 
 @Component({
@@ -14,7 +14,7 @@ export class AppComponent {
   @ViewChild(ImageDesignerComponent) imageDesigner!: ImageDesignerComponent;
 
   readonly config$: Observable<Config>;
-  selectedFrame: HTMLImageElement | null = null;
+  selectedFrame: Frame | null = null;
   picture: HTMLImageElement | null = null;
   email: string | null = null;
 
@@ -22,7 +22,7 @@ export class AppComponent {
     this.config$ = dataService.getConfig();
   }
 
-  onSelectFrame(f: HTMLImageElement) {
+  onSelectFrame(f: Frame) {
     this.selectedFrame = f;
 
     if (this.stage == Stage.start) {
@@ -38,12 +38,23 @@ export class AppComponent {
 
   send() {
     if (AppComponent.validateEmail(this.email!)) {
-      console.log({
-        image: this.imageDesigner.getPicture(),
-        email: this.email
-      });
 
-      this.stage = Stage.confirmation;
+      try {
+        console.log({
+          image: this.imageDesigner.getPicture(),
+          email: this.email
+        });
+
+        if (this.email == "a@b.cc") {
+          throw 'Test Error';
+        }
+
+        this.stage = Stage.confirmation;
+      }
+      catch (e) {
+        this.stage = Stage.error;
+        console.error(e);
+      }
     }
     else {
       this.stage = Stage.emailValidation;
@@ -73,11 +84,11 @@ export class AppComponent {
       case Stage.email:
         return 'כתובת דואר אלקטרוני';
       case Stage.emailValidation:
-        return 'הכתובת שגויה. הקלד שנית';
+        return 'הכתובת שגויה, הקלד שנית';
       case Stage.confirmation:
-        return 'נשלחה';
+        return 'התמונה נשלחה';
       case Stage.error:
-        return 'שגיאה. נסה שנית';
+        return 'שגיאה, נסה שנית';
     }
   }
 
